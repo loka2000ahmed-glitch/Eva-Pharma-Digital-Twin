@@ -1,3 +1,6 @@
+import os
+import json
+from streamlit_lottie import st_lottie
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -10,6 +13,17 @@ import json
 from io import BytesIO
 from fpdf import FPDF
 import warnings
+import os
+import json
+
+def load_lottiefile(filepath: str):
+    base_path = os.path.dirname(__file__)
+    full_path = os.path.join(base_path, filepath)
+    try:
+        with open(full_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 warnings.filterwarnings("ignore")
 
@@ -224,6 +238,11 @@ def compute_scenario(base_df: pd.DataFrame, reductions: dict, shift_hours: int, 
 
 
 with st.sidebar:
+    try:
+        lottie_factory = load_lottiefile("factory.json")
+        st_lottie(lottie_factory, height=200, key="factory_anim")
+    except Exception as e:
+        st.sidebar.error("لم يتم تحميل الأنيميشن")
     st.header("Factory Settings")
     company_name = st.text_input("Factory name", value="Eva Pharma")
     num_stages = st.number_input("Number of stages", min_value=2, max_value=20, value=5)
@@ -1343,3 +1362,11 @@ if enable_logging_ui:
     except Exception:
         st.info("Log file is not available")
 st.success("Advanced modules loaded successfully")
+
+
+def load_lottiefile(filepath: str):
+    import os
+    import json
+    full_path = os.path.join(os.path.dirname(__file__), filepath)
+    with open(full_path, "r", encoding="utf-8") as f:
+        return json.load(f)
